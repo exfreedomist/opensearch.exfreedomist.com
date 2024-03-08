@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Поисковая система торрентов: magnet entry page.">
+
+    <link rel="stylesheet" href="{{static_prefix}}/css/mvp.css">
+    <link rel="shortcut icon" href="{{static_prefix}}/images/favicon.ico" type="image/x-icon">
+    <script type="text/javascript" src="{{static_prefix}}/js/local.js"></script>
+    <style>
+			#header {
+				text-align: center;
+				border-bottom: solid black 2px;
+			}
+			#config-img {
+				height: 500px;
+			}
+			#footer {
+				text-align: center;
+				border-top: solid black 2px;
+				margin-top: 3em;
+				margin-bottom: 1em;
+			}
+			#status {
+				position: absolute;
+				right: 0;
+				top: 2em;
+			}
+			.code {
+				background-color: rgba(0, 0, 0, 0.1);
+				border-radius: 5px;
+			}
+			body {
+				max-width: 50em;
+				margin: auto;
+			}
+
+			.toast {
+                background-color: #e6ffec;
+                color: #006618;
+                border-radius: 5px;
+                padding: 1rem 2rem;
+                margin: 0.5rem;
+            }
+    </style>
+    <script>
+        function copy(that) {
+            const container_t = document.getElementById("container-notify");
+            const notif_t = document.createElement("div");
+            notif_t.classList.add("toast");
+            notif_t.innerText = "Magnet link has been copied";
+            container_t.appendChild(notif_t);
+            setTimeout(() => {
+                notif_t.remove();
+            }, 3000);
+
+            var inp = document.createElement('input');
+            document.body.appendChild(inp)
+            inp.value = that.textContent
+            inp.select();
+            document.execCommand('copy', false);
+            inp.remove();
+        }
+    </script>
+    <title>[Ex]Freedomist.com: magnet {{key}}</title>
+</head>
+<body>
+    <div id="header">
+        <section>
+            <a href="/" target="_blank"><img src="{{static_prefix}}/images/test3.svg" width="400" height="120" alt="Lowload Search Engines logo"></a>
+        </section>
+	</div>
+    <div id="body">
+        <h2>{{ cached['title'] }}</h2>
+        <small>по запросу <code>{{ cached['query'] }}</code></small>
+       <br>
+	   <section>
+           <p><b>Category:</b> {{ cached['board_label']}} </p>
+        <p><b>Size:</b> {{ cached['size'] }} | <b>Seeders:</b> {{ cached['seeders'] }} | <b>Leechers:</b> {{ cached['leechers'] }}</p>
+        <p><b>Downloads (by {{cached['tracker']}}):</b> {{ cached['downloads'] }}
+        </p>
+        <p>
+            {% if data['enc_post_url'] %}
+                <b><a href="{{ data['enc_post_url'] }}">Local cache</a></b> |
+            {% endif %}
+            <a href="{{ magnet_click }}" target="_blank">Open magnet in your Bittorrent client</a>
+        </p>
+        <p><pre><code onclick="copy(this)" id="magnet-link">{{ data['magnet_link'] | safe }}</code></pre></p>
+           <p>
+               <small>↑ кликните на ссылку, чтобы скопировать ↑</small>
+           </p>
+        <div id="container-notify"></div>
+       </section>
+        <section>
+           <table style="border: none;">
+               <tr>
+                <form action="/" method="post" id="search-form">
+                    {% if query %}
+                        <input type="text" name="query" size="60" value="{{query}}" placeholder="Search...">
+                    {% else %}
+                        <input type="text" name="query" size="60" placeholder="Search...">
+                    {% endif %}
+                    <input type="hidden" name="offset" value="0" hidden="">
+
+                    <select name="order_by" id="order_by">
+                        {% if order_by == 'd' %}
+                        <option selected value="d">downloads</option>
+                        {% else %}
+                        <option value="d">downloads</option>
+                        {% endif %}
+
+                        {% if order_by == 's' %}
+                        <option selected value="s">seeders</option>
+                        {% else %}
+                        <option value="s">seeders</option>
+                        {% endif %}
+
+                        {% if order_by == 'z' %}
+                        <option selected value="z">size&#8595;</option>
+                        {% else %}
+                        <option value="z">size&#8595;</option>
+                        {% endif %}
+
+                        {% if order_by == 'r' %}
+                        <option selected value="r">size&#8593;</option>
+                        {% else %}
+                        <option value="r">size&#8593;</option>
+                        {% endif %}
+
+                        {% if order_by == 't' %}
+                        <option selected value="t">last updated</option>
+                        {% else %}
+                        <option value="t">last updated</option>
+                        {% endif %}
+
+                        {% if order_by == 'l' %}
+                        <option selected value="t">name</option>
+                        {% else %}
+                        <option value="l">name</option>
+                        {% endif %}
+                    </select>
+                    {% if is_mobile %}
+                    <button type="submit" id="m-submit">Search</button>
+                    {% endif %}
+                </form>
+               </tr>
+            </table>
+        </section>
+	</div>
+    <div id="footer">
+        <section>
+            <p align="center">
+                <a href="https://t.me/freedomist_news" target="_blank">Новости нашего проекта в Telegram</a>: подписывайся, чтобы быть в курсе последних обновлений!
+            </p>
+        </section>
+        <section>
+            <a href="/"><img src="{{static_prefix}}/images/test3.svg" width="270" height="90" alt="Lowload Search Engines logo"></a>
+        </section>
+	</div>
+</body>
+</html>

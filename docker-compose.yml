@@ -1,0 +1,18 @@
+version: "3.3"
+
+services:
+  base-image:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: freedomist-search
+    network_mode: host
+    restart: unless-stopped
+    container_name: opensearch.exfreedomist.com
+    command:
+      [
+        "python3",
+        "main.py"
+      ]
+    volumes:
+      - /etc/localtime:/etc/localtime

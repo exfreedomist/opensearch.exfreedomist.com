@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Поиск, торрент, результаты поиска, torrent, manget link">
+    <meta name="description" content="Поисковая система торрентов: результаты поиска (открытая мобильная версия).">
+
+    <link rel="stylesheet" href="{{static_prefix}}/css/mvp.css">
+    <link rel="shortcut icon" href="{{static_prefix}}/images/favicon.ico" type="image/x-icon">
+    <script type="text/javascript" src="{{static_prefix}}/js/local.js"></script>
+    <style>
+			#header {
+				text-align: center;
+				border-bottom: solid black 2px;
+			}
+			#config-img {
+				height: 500px;
+			}
+			#footer {
+				text-align: center;
+				border-top: solid black 2px;
+				margin-top: 3em;
+				margin-bottom: 1em;
+			}
+			#status {
+				position: absolute;
+				right: 0;
+				top: 2em;
+			}
+			.code {
+				background-color: rgba(0, 0, 0, 0.1);
+				border-radius: 5px;
+			}
+			.btn-link {
+                border: none;
+                outline: none;
+                background: none;
+                cursor: pointer;
+                color: #0000EE;
+                padding: 0;
+                text-decoration: underline;
+                font-family: inherit;
+                font-size: inherit;
+            }
+			body {
+				max-width: 100em;
+				margin: auto;
+			}
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $('#order_by').change(function(){
+              document.getElementById('search-form').submit();
+            });
+        });
+    </script>
+    <title>[Ex]Freedomist.com: результаты поиска "{{ query[:150] }}"</title>
+</head>
+<body>
+    <div id="header">
+        <section>
+            <a href="/" target="_blank"><img src="{{static_prefix}}/images/test3.svg" width="400" height="120" alt="Lowload Search Engines logo"></a>
+        </section>
+	</div>
+    <div id="body">
+       <br>
+	   <section>
+           <table style="border: none;">
+            <form action="/" method="post" id="search-form">
+                <tr>
+                {% if query %}
+                    <input type="text" name="query" size="80" value="{{query}}" placeholder="Search...">
+                {% else %}
+                    <input type="text" name="query" size="80" placeholder="Search...">
+                {% endif %}
+                <input type="hidden" name="offset" value="0" hidden="">
+                </tr>
+                <tr>
+                <label for="order_by">sort by</label>
+                <select name="order_by" id="order_by">
+                    {% if order_by == 'd' %}
+                    <option selected value="d">downloads</option>
+                    {% else %}
+                    <option value="d">downloads</option>
+                    {% endif %}
+
+                    {% if order_by == 's' %}
+                    <option selected value="s">seeders</option>
+                    {% else %}
+                    <option value="s">seeders</option>
+                    {% endif %}
+
+                    {% if order_by == 'z' %}
+                    <option selected value="z">size&#8595;</option>
+                    {% else %}
+                    <option value="z">size&#8595;</option>
+                    {% endif %}
+
+                    {% if order_by == 'r' %}
+                    <option selected value="r">size&#8593;</option>
+                    {% else %}
+                    <option value="r">size&#8593;</option>
+                    {% endif %}
+
+                    {% if order_by == 't' %}
+                    <option selected value="t">last updated</option>
+                    {% else %}
+                    <option value="t">last updated</option>
+                    {% endif %}
+
+                    {% if order_by == 'l' %}
+                    <option selected value="t">name</option>
+                    {% else %}
+                    <option value="l">name</option>
+                    {% endif %}
+                </select>
+                </tr>
+                <tr>
+                    <button type="submit" id="m-submit">Search</button>
+                </tr>
+            </form>
+                </table>
+        </section>
+        <br>
+        <section>
+            <code>{{ query }}</code>
+        </section>
+        <br>
+        <section>
+            <p align="center">Всего <b>{{ "{:,}".format(int(stats)) }}</b> результатов:</p>
+        </section>
+        <section>
+                {% for item in data %}
+                <aside>
+                    <h3>
+                        {{ int(item['rank']) + 1 }}: <a href="/magnet?key={{item['magnet_key']}}&token=internal-open-search" target="_blank">{{ item['title'] }}</a><sup>{{ item['tracker'] }}</sup>
+                    </h3>
+                    <p>
+                        <i>{{ item['board_label'] }}</i>
+                    </p>
+                    <p>
+                        {{ item['size'] }} | <span style="color: green">S.: {{ "{:,}".format(int(item['seeders'])) }}</span> / <span style="color: red">L.: {{ "{:,}".format(int(item['leechers'])) }}</span>
+                    </p>
+                    <p>
+                        <b>{{ "{:,}".format(int(item['downloads'])) }}</b> downloads, {{ item['post_datetime'] }}
+                    </p>
+                </aside>
+                {% endfor %}
+            </section>
+        <section>
+            {% if offset >= 20 %}
+            <form type="noborder" action="/" method="post">
+                <input type="hidden" name="query" value="{{query}}">
+                <input type="hidden" name="offset" value="{{offset - 20}}">
+                <input type="hidden" name="order_by" value="{{order_by}}">
+                <button type="submit" class="btn-link">Следующие 20</button>
+            </form>
+            {% endif %}
+            {% if offset + 20 < stats %}
+            <form type="noborder" action="/" method="post">
+                <input type="hidden" name="query" value="{{query}}">
+                <input type="hidden" name="offset" value="{{offset + 20}}">
+                <input type="hidden" name="order_by" value="{{order_by}}">
+                <button type="submit" class="btn-link">Предыдущие 20 (of <b>{{"{:,}".format(int(stats))}}</b>)</button>
+            </form>
+            {% endif %}
+        </section>
+        <br>
+        <section>
+            <a href="#"><button>Hаверх</button></a>
+        </section>
+	</div>
+    <div id="footer">
+        <section>
+            <p align="center">
+                <a href="https://t.me/freedomist_news" target="_blank">Новости нашего проекта в Telegram</a>: подписывайся, чтобы быть в курсе последних обновлений!
+            </p>
+        </section>
+        <h3><a href="https://exfreedomist.com" target="_blank">[Ex]Freedomist</a></h3>
+    </div>
+</body>
+</html>
