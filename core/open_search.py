@@ -27,6 +27,20 @@ API_SEARCH_COUNT = ENV_CONFIG("search_count")
 API_BOARD = ENV_CONFIG("board")
 API_MAGNET = ENV_CONFIG("magnet")
 
+# Status map:
+STATUS_TRANSLATE_MAP = {
+    '√': '✅ (проверено)',
+    '#': '⚠️ (сомнительно)',
+    '*': '*️⃣ (не проверено)',
+    'T': '🕠 (временная)',
+    '?': '❓ (недооформлено)',
+    '∑': '✝️ (поглощено)',
+    '!': '❗️(не оформлено)',
+    'D': '🔘 (повтор)',
+    'x': '❌️ (закрыто)',
+    '∏': '♿️ (проверяется)',
+}
+
 
 def is_restricted(user_agent: str) -> bool:
     parsed_ua = parse(user_agent)
@@ -112,6 +126,7 @@ async def search_do(
 
     async with httpx.AsyncClient(verify=False) as client:
         for item in data:
+            item["status"] = STATUS_TRANSLATE_MAP.get(item["status"], "")
             item['query'] = query
 
             # fetch label board for all items:

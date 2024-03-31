@@ -76,7 +76,11 @@
         <small>по запросу <code>{{ cached['query'] }}</code></small>
        <br>
 	   <section>
-           <p><b>Category:</b> {{ cached['board_label']}} </p>
+           <p><b>Category:</b> {{ cached['board_label']}}
+           {% if cached['status'] %}
+            | {{ cached['status'] }}
+           {% endif %}
+           </p>
         <p><b>Size:</b> {{ cached['size'] }} | <b>Seeders:</b> {{ cached['seeders'] }} | <b>Leechers:</b> {{ cached['leechers'] }}</p>
         <p><b>Downloads (by {{cached['tracker']}}):</b> {{ cached['downloads'] }}
         </p>
