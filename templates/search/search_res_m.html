@@ -139,6 +139,9 @@
                     </h3>
                     <p>
                         <i>{{ item['board_label'] }}</i>
+                        {% if item['status'] %}
+                         | {{ item['status'] }}
+                        {% endif %}
                     </p>
                     <p>
                         {{ item['size'] }} | <span style="color: green">S.: {{ "{:,}".format(int(item['seeders'])) }}</span> / <span style="color: red">L.: {{ "{:,}".format(int(item['leechers'])) }}</span>
